@@ -1,0 +1,56 @@
+import mensajeria.*
+import mensajeros.*
+
+test "Que roberto pueda llevar un paquete Especial pago" {
+        paqueteEspecial.pagar()
+        camion.acoplados(1)
+        assert.that(puenteDeBrooklyn.dejaEntrar(roberto))
+    }
+
+test "El paqueton con dos destinos y pagos de 200 esta pago" {
+    paqueton.pagar(200)
+    paqueton.destinos([laMatrix, puenteDeBrooklyn])
+    assert.that(paqueton.estaPago())
+}
+	
+	test "El paqueton con dos destinos, si paga menos de 200 no esta pago" {
+    paqueton.pagar(-1) 
+    assert.notThat(paqueton.estaPago())
+}
+
+test "neo puede entrar a la matrix si tiene crédito" {
+  	assert.that(laMatrix.dejaEntrar(neo))
+}
+test "neo no puede entrar a la matrix cuando tiene poco credito" {
+  	neo.llamar()
+  	assert.notThat(laMatrix.dejaEntrar(neo))
+}
+
+test "neo puede entrar al puente de brooklin" {
+  	assert.that(puenteDeBrooklyn.dejaEntrar(neo))
+}
+
+test "el paquete originalmente está impago" {
+  	assert.notThat(paquete.estaPago())
+}
+
+test "Si se paga el paquete, queda pago." {
+  	paquete.pagar()
+  	assert.that(paquete.estaPago())
+}
+
+test "el paqueteEspecial impago no puede ser entregado" {
+  	assert.notThat(paqueteEspecial.puedeSerEntregadoPor(neo))
+  	
+}
+
+test "El paquete pago a la matrix puede ser entregado por neo" {
+  	paquete.pagar()
+  	assert.that(paquete.puedeSerEntregadoPor(neo))
+}
+
+test "El paquete pago al puente puede ser entregado por neo" {
+  	paquete.destino(puenteDeBrooklyn)
+  	paquete.pagar()
+  	assert.that(paquete.puedeSerEntregadoPor(neo))
+}

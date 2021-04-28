@@ -1,0 +1,127 @@
+import mensajeria.*
+import mensajeros.*
+
+describe "Test de Mensajeros " {
+
+	method contratarTodos() {
+		mensajeria.contratar(neo)
+		mensajeria.contratar(roberto)
+		mensajeria.contratar(chuck)
+		mensajeria.contratar(pedro)
+	}
+
+test "La mensajeria no tiene mensajeros."{
+	assert.equals(mensajeria.empleados(), [])
+}
+
+test "La mensajeria no tiene a Neo."{
+	assert.notThat(mensajeria.empleados().contains(neo))
+}
+
+test "La mensajeria tiene a Neo como empleado si lo agregamos." {
+	mensajeria.contratar(neo)
+	assert.that(mensajeria.empleados().contains(neo))
+}
+
+test "La mensajeria devuelve a Neo, Chuck y Pedro si le pido los cantidatos posibles para entregar un paqueton."{
+	self.contratarTodos()
+	paqueton.pagar(200)
+	assert.equals([neo, chuck, pedro], mensajeria.candidatosPara(paqueton))
+}
+
+test "No todos los empleados de la mensajeria pueden entregar el paquete normal."{
+	self.contratarTodos()
+	assert.notThat(mensajeria.algunoPuedeEntregar(paquete))
+}
+
+test "La mensajeria tiene sobrepeso si contrata a Chuck Norris."{
+	mensajeria.contratar(chuck)
+	assert.that(mensajeria.tieneSobrepeso())
+}
+
+test "Si neo es empleado, entonces hay un mensajero que puede enviar el paquete al puente de Brooklyn." {
+	paquete.destino(puenteDeBrooklyn)
+	paquete.pagar()
+	mensajeria.contratar(neo)
+	assert.that(paquete.puedeSerEntregadoPor(neo))
+}
+
+test "El paqueton puede ser entregado si esta pagó y en la mensajeria hay mensajeros que pueden ir a todos los destinos."{
+	self.contratarTodos()
+	paqueton.pagar(500)
+	assert.that(mensajeria.algunoPuedeEntregar(paqueton))
+}
+
+
+test "Con cualquier mensajero que haya en la mensajeria, el paquetito puede ser llevado."{
+	self.contratarTodos()
+	assert.that(mensajeria.algunoPuedeEntregar(paquetito))
+}
+
+
+test "La mensajeria tiene tiene sobrepeso si contrata a todos."{
+	self.contratarTodos()
+	assert.that(mensajeria.tieneSobrepeso())
+}
+
+test "la mensajeria con todos puede enviar paquete"{
+	paquete.pagar()
+	paquete.destino(puenteDeBrooklyn)
+	mensajeria.pendientes([paquete])
+	self.contratarTodos()
+	mensajeria.enviar(paquete)
+	assert.equals([], mensajeria.pendientes() )
+}
+
+test "la mensajeria con solo roberto no puede enviar paquete y queda pendiente"{
+	mensajeria.pendientes([paquete])
+	self.contratarTodos()
+	mensajeria.despedir(chuck)
+	mensajeria.despedir(neo)
+	mensajeria.despedir(pedro)
+	mensajeria.enviar(paquete)
+	assert.that(mensajeria.pendientes().contains(paquete) )
+}
+
+test "La mensajeria los envia a todos los paquetes" {
+	paquete.pagar()
+	paqueton.pagar(200)
+	paqueteEspecial.pagar()
+	mensajeria.pendientes([paquete, paquetito, paqueton, paqueteEspecial])
+	self.contratarTodos()
+	mensajeria.enviarTodos() 
+    assert.that(mensajeria.pendientes().isEmpty() )
+ }
+
+test "La mensajeria con solo roberto envia a paquetito" {
+    mensajeria.pendientes([paquetito])
+	mensajeria.contratar(roberto)
+	mensajeria.enviar(paquetito)
+    assert.equals([paquetito], mensajeria.enviados() )
+  }
+
+test "La mensajeria con paquetes para entregar envia al mas caro que es el paquete especial "{
+    self.contratarTodos()
+    paqueteEspecial.pagar()
+    paqueteEspecial.destino(laMatrix)
+    mensajeria.pendientes([paquete,paquetito,paqueton,paqueteEspecial])
+    mensajeria.enviarPendienteCaro()
+    assert.equals([paqueteEspecial], mensajeria.enviados() )
+  }
+
+test "La mensajeria intenta enviar al mas caro que es el paquete especial, pero no hay quien lo envíe porque hubo despidos"{
+    mensajeria.despedir(chuck)
+    mensajeria.despedir(neo)
+    mensajeria.pendientes([paquete,paquetito,paqueton,paqueteEspecial])
+    mensajeria.enviarPendienteCaro()
+    assert.equals([paquete,paquetito,paqueton,paqueteEspecial], mensajeria.pendientes() )
+}
+
+test "La facturacion luego de enviar dos veces el paqueton es 400" {
+	self.contratarTodos()
+	paqueton.pagar(200)
+	mensajeria.enviar(paqueton)
+	mensajeria.enviar(paqueton)
+	assert.equals(mensajeria.facturacion(), 400)
+}
+}
